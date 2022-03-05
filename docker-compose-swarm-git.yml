@@ -7,7 +7,7 @@ x-default-logs: &default-opts
       max-size: "1m"
 
 x-master-opts: &master
-  ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+  ES_JAVA_OPTS: "-Xmx512m -Xms512m"
   discovery.seed_resolver.timeout: 60s
   discovery.seed_hosts: master1,master2,master3
   cluster.initial_master_nodes: master1,master2,master3
@@ -26,7 +26,7 @@ x-master-opts: &master
   
 
 x-data-opts: &data
-  ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+  ES_JAVA_OPTS: "-Xmx512m -Xms512m"
   discovery.seed_resolver.timeout: 60s
   discovery.seed_hosts: master1,master2,master3
   cluster.initial_master_nodes: master1,master2,master3
@@ -63,7 +63,7 @@ services:
         constraints: [ node.hostname == node1 ]
       resources:
         limits:
-          memory: 4G
+          memory: 1G
   
   master2:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -84,7 +84,7 @@ services:
         constraints: [ node.hostname == node1 ]
       resources:
         limits:
-          memory: 4G
+          memory: 1G
 
   master3:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -105,7 +105,7 @@ services:
         constraints: [ node.hostname == node2 ]
       resources:
         limits:
-          memory: 4G
+          memory: 1G
   
   data1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -126,7 +126,7 @@ services:
         constraints: [ node.hostname == node1 ]
       resources:
         limits:
-          memory: 4G
+          memory: 1G
   data2:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
     environment:
@@ -146,7 +146,7 @@ services:
         constraints: [ node.hostname == node2 ]
       resources:
         limits:
-          memory: 4G
+          memory: 1G
 
 networks:
   esnet:
