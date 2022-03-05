@@ -20,7 +20,7 @@ x-master-opts: &master
   logger.org.elasticsearch.cluster.coordination.ClusterBootstrapService: TRACE
   logger.org.elasticsearch.discovery: TRACE
   #transport.host: 0.0.0.0
-  transport.publish_port: 9300
+  #transport.publish_port: 9300
   network.bind_host: 0.0.0.0
   transport.publish_host: _eth0_
   
@@ -38,7 +38,7 @@ x-data-opts: &data
   xpack.security.enabled: "false"
   logger.org.elasticsearch.cluster.coordination.ClusterBootstrapService: TRACE
   logger.org.elasticsearch.discovery: TRACE
-  transport.publish_port: 9300
+  #transport.publish_port: 9300
   network.bind_host: 0.0.0.0
   transport.publish_host: _eth0_
   
