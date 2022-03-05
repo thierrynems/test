@@ -1,0 +1,155 @@
+
+version: "3.8"
+
+x-default-logs: &default-opts
+  logging:
+    options:
+      max-size: "1m"
+
+x-master-opts: &master
+  ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+  discovery.seed_resolver.timeout: 60s
+  discovery.seed_hosts: master1,master2,master3
+  cluster.initial_master_nodes: master1,master2,master3
+  cluster.name: "es-cluster"
+  node.master: "true"
+  node.data: "false"
+  node.ingest: "false"
+  xpack.security.enabled: "false"
+  network.host: 0.0.0.0
+  logger.org.elasticsearch.cluster.coordination.ClusterBootstrapService: TRACE
+  logger.org.elasticsearch.discovery: TRACE
+  #transport.host: 0.0.0.0
+  transport.publish_port: 9300
+  network.bind_host: 0.0.0.0
+  transport.publish_host: _eth0_
+  
+
+x-data-opts: &data
+  ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+  discovery.seed_resolver.timeout: 60s
+  discovery.seed_hosts: master1,master2,master3
+  cluster.initial_master_nodes: master1,master2,master3
+  cluster.name: "es-cluster"
+  network.host: 0.0.0.0
+  node.master: "false"
+  node.data: "true"
+  node.ingest: "false"
+  xpack.security.enabled: "false"
+  logger.org.elasticsearch.cluster.coordination.ClusterBootstrapService: TRACE
+  logger.org.elasticsearch.discovery: TRACE
+  transport.publish_port: 9300
+  network.bind_host: 0.0.0.0
+  transport.publish_host: _eth0_
+  
+
+services:
+  master1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    environment:
+      <<: *master
+      node.name: "master1"
+     # network.publish_host: master1
+    ports: ['9200:9200']
+    networks: ['esnet']
+    deploy:
+      endpoint_mode: vip
+      mode: 'replicated'
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [ node.hostname == node1 ]
+      resources:
+        limits:
+          memory: 4G
+  
+  master2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    environment:
+      <<: *master
+      node.name: "master2"
+      #network.publish_host: master2
+    #ports: ['9200:9200']
+    networks: ['esnet']
+    deploy:
+      endpoint_mode: vip
+      mode: 'replicated'
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [ node.hostname == node1 ]
+      resources:
+        limits:
+          memory: 4G
+
+  master3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    environment:
+      <<: *master
+      node.name: "master3"
+      #network.publish_host: master3
+    #ports: ['9200:9200']
+    networks: ['esnet']
+    deploy:
+      endpoint_mode: vip
+      mode: 'replicated'
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [ node.hostname == node2 ]
+      resources:
+        limits:
+          memory: 4G
+  
+  data1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    environment:
+      <<: *data
+      node.name: "data1"
+      #network.publish_host: data1
+    #ports: ['9200:9200']
+    networks: ['esnet']
+    deploy:
+      endpoint_mode: vip
+      mode: 'replicated'
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [ node.hostname == node1 ]
+      resources:
+        limits:
+          memory: 4G
+  data2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    environment:
+      <<: *data
+      node.name: "data2"
+      #network.publish_host: data2
+    #ports: ['9200:9200']
+    networks: ['esnet']
+    deploy:
+      endpoint_mode: vip
+      mode: 'replicated'
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [ node.hostname == node2 ]
+      resources:
+        limits:
+          memory: 4G
+
+networks:
+  esnet:
+    driver: overlay
+    attachable: true
+    name: esnet
